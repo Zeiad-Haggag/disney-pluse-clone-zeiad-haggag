@@ -1,12 +1,49 @@
-import React from 'react';
+import React ,{useEffect} from 'react';
 import styled from 'styled-components';
+import { useNavigate } from "react-router-dom" ;
+import { auth ,provider } from "../firebase";
+import { signInWithPopup , signOut ,onAuthStateChanged} from "firebase/auth";
+import{ selectUserName ,
+        selectUserPhoto,
+        setUserLogin
+        } from "../features/user/userSlice";
+import { useDispatch, useSelector }  from "react-redux" ;
 
 function Login() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    onAuthStateChanged(auth ,async(user) => {
+        if(user){
+          dispatch(setUserLogin({
+       name: user.displayName,
+       email: user.email,
+       photo: user.photoURL
+     }))
+     navigate("/home");
+        }
+    })
+  },[])
+
+
+  const signIn =() => {
+    signInWithPopup(auth ,provider)
+    .then((result) => {
+      let user = result.user;
+     dispatch(setUserLogin({
+       name: user.displayName,
+       email: user.email,
+       photo: user.photoURL
+     }))
+     navigate("/home");
+    })
+  }
   return( 
   <Container>
    <CTA>
     <CTALogoOne src="./images/cta-logo-one.svg" />
-    <SignUp> GET ALL THERE</SignUp>
+    <SignUp onClick={signIn}> GET ALL THERE</SignUp>
     <Description>
      Get Premier Access to Raya and the Last Dragon for an additional fee with a Disney+ subscription. As of 03/26/21, the price of Disney+ and The Disney Bundle will increase by $1.
     </Description>

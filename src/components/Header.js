@@ -114,6 +114,7 @@ display:flex;
 align-items:center;
 padding:0 36px;
 z-index:3;
+overflow-x:none;
 `
 
 const Logo =styled.img`
