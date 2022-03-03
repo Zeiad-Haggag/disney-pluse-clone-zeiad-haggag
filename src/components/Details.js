@@ -2,6 +2,7 @@ import React ,{useEffect ,useState} from 'react';
 import ReactDOM from "react-dom";
 import styled from 'styled-components';
 import {useParams} from "react-router-dom";
+import FsLightbox from 'fslightbox-react';
 import db from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -9,10 +10,10 @@ import { doc, getDoc } from "firebase/firestore";
 function Details() {
   const { id } = useParams();
   const[ movie,setMovie ] = useState();
+  const [toggler, setToggler] = useState(false);
   useEffect(async () => { 
    const docRef =  doc(db, "movies", id);
    const docSnap =await getDoc(docRef);
-
    if (docSnap.exists()) {
     setMovie(docSnap.data());
     console.log("Document data:", docSnap.data());
@@ -32,13 +33,29 @@ function Details() {
     <img src={movie.titleImg} alt="" />
   </ImageTitle>
   <Controls>
-    <PlayButton>
+    <PlayButton onClick={() => setToggler(!toggler)}>
       <img src="/images/play-icon-black.png" alt="" />
       <span>PLAY</span>
+      <FsLightbox
+          toggler={toggler}
+          sources={[
+         movie.trailer
+          
+          ]}
+          
+          disableThumbs={true}
+          />
     </PlayButton>
-    <TrailerButton>
+    <TrailerButton onClick={() => setToggler(!toggler)}>
       <img src="/images/play-icon-white.png" alt="" />
       <span>Trailer</span>
+      <FsLightbox
+          toggler={toggler}
+          sources={[
+          movie.trailer
+          ]}
+          disableThumbs={true}
+          />
     </TrailerButton>
     <AddButton>
       <span> + </span>
@@ -64,10 +81,12 @@ function Details() {
 
 export default Details;
 
-const Container = styled.div`
-min-height: calc(100vh - 70px);
+const Container = styled.div` 
+min-height: calc(100vh - 250px);
 padding:0 calc(3.5vw + 5px);
 position: relative;
+display: block;
+
 
 
 `
@@ -77,20 +96,25 @@ position: fixed ;
 top: 0;
 right: 0;
 left: 0;
-bottom: 0;
 z-index:-1;
 opacity:0.8;
+padding-top: 70px;
 
-img{
-  width: 100%;
-  height: 100%;
-  object-fit:cover;
-}
+img {
+    width: 100vw;
+    height: 100vh;
+    
+
+    @media (max-width: 768px) {
+      width: initial;
+    }
+  }
 
 `
 
 const ImageTitle = styled.div`
     height: 30vh;
+    align-items: flex-end;
     min-height: 170px;
     width: 35vw;
     min-width: 200px;

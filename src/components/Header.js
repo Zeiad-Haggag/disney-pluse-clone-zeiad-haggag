@@ -1,4 +1,5 @@
 import React , {useEffect} from 'react';
+import { Link } from "react-router-dom";
 import styled from 'styled-components';
 import { useNavigate } from "react-router-dom" ;
 import { auth ,provider } from "../firebase";
@@ -9,6 +10,7 @@ import{ selectUserName ,
         setSignOut} from "../features/user/userSlice";
       
 import { useDispatch, useSelector }  from "react-redux" ;
+
 
 function Header() {
   const dispatch = useDispatch();
@@ -24,7 +26,7 @@ function Header() {
        email: user.email,
        photo: user.photoURL
      }))
-     navigate("/");
+     navigate("/home");
         }
     })
   },[])
@@ -38,14 +40,14 @@ function Header() {
        email: user.email,
        photo: user.photoURL
      }))
-     navigate("/");
+     navigate("/home");
     })
   }
 
   const signOut = () => {
     auth.signOut().then(() => {
       dispatch(setSignOut());
-      navigate("/login");
+      navigate("/");
     })
 
   }
@@ -53,17 +55,21 @@ function Header() {
 
   return(
    <Nav>
+   <Link to="/home">
    <Logo src="/images/logo.svg"/>
+   </Link>
    {
      !userName ?(<LoginContainer>
        <Login onClick={signIn}> Login </Login>
      </LoginContainer>)  : (
        <>
-          <NavMenu>
+    <NavMenu>
+    <Link to="/home">
     <a >
      <img src="/images/home-icon.svg"  />
      <span>HOME</span>
     </a>
+    </Link>
     <a >
      <img src="/images/search-icon.svg"  />
      <span>SEARCH</span>
@@ -85,7 +91,12 @@ function Header() {
      <span>SERIES</span>
     </a>
    </NavMenu>
-   <UserImg onClick={signOut} src="/images/me.jpg"/>
+   <SignOut>
+   <UserImg  src={userPhoto}/>
+   <DropDown>
+   <span onClick={signOut}>Sign out</span>
+  </DropDown>
+   </SignOut>
        </>
      )
    }
@@ -102,7 +113,7 @@ background:#090b13;
 display:flex;
 align-items:center;
 padding:0 36px;
-overflow-x:hidden;
+z-index:3;
 `
 
 const Logo =styled.img`
@@ -121,6 +132,8 @@ a{
  align-items: center;
  padding:0 12px;
  cursor:pointer;
+ text-decoration:none;
+ color:white;
 
  img{
   height:20px;
@@ -156,10 +169,9 @@ a{
 `
 
 const UserImg =styled.img`
-width:48px;
-height:48px;
-border-radius:50%;
-cursor:pointer;
+height:100%;
+
+
 
 `
 const Login = styled.div`
@@ -184,4 +196,49 @@ flex:1;
 display:flex;
 justify-content:flex-end;
 `
+
+const DropDown =styled.div`
+  position: absolute;
+  top: 48px;
+  right:0px;
+  background: rgb(19, 19, 19);
+  border: 1px solid rgba(151, 151, 151, 0.34);
+  border-radius: 4px;
+  box-shadow: rgb(0 0 0 / 50%) 0px 0px 18px 0px;
+  padding: 10px;
+  font-size: 14px;
+  letter-spacing: 3px;
+  width: 100px;
+  opacity: 0;
+  
+`
+
+const SignOut =styled.div`
+position:relative;
+height:48px;
+width:48px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+
+${UserImg}{
+  border-radius:50%;
+  width: 100%;
+  height: 100%;
+}
+
+
+&:hover {
+    ${DropDown} {
+      opacity: 1;
+      transition-duration: 1s;
+      z-index:1;
+      
+      
+    }
+  }
+` 
+
 

@@ -1,23 +1,34 @@
-import React from "react";
-
+import React from 'react';
 import styled from "styled-components";
-import { selectMovies } from "../features/movie/movieSlice";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { selectOriginal } from "../features/movie/movieSlice"
 
-function Movies() {
- const movies = useSelector( selectMovies );
-
+function Originals() {
+ const movies = useSelector(selectOriginal);
   return (
     <Container>
+      <h4> Originals</h4>
+      <Content>
+        { movies && movies.map((movie) =>(
+          <Wrap key ={movie.id}>
+            <Link to={`/details/${movie.id}`}>
+              <img src={movie.cardImg} />
+            </Link>
+        </Wrap>
+        ))}
         
+      
+      </Content>
     </Container>
   );
 }
 
-export default Movies;
+export default Originals
+
 
 const Container = styled.div`
- 
+ padding: 0 0 26px;
 `;
 
 const Content = styled.div`

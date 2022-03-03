@@ -2,7 +2,10 @@ import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import ImgSlider from './ImgSlider';
 import Viewers from './Viewers';
-import Movies from './Movies';
+import Recommends from "./Recommends";
+import Originals from "./Originals";
+import NewDisney from "./NewDisney";
+import Trendings from "./Trendings";
 import { colRef } from '../firebase';
 import { onSnapshot } from 'firebase/firestore';
 import { useDispatch } from "react-redux" ;
@@ -14,12 +17,42 @@ import {setMovies} from "../features/movie/movieSlice";
 function Home() {
   const dispatch = useDispatch() ;
 
+  let recommends =[];
+  let newDisneys = [];
+  let originals = [];
+  let trendings = [];
+
   useEffect(() => {
     onSnapshot(colRef,(snapshot) => {
-      let tempMovies = snapshot.docs.map((doc)=>{
+      snapshot.docs.map((doc)=>{
+
+        switch(doc.data().type){
+          case "recommend": 
+          recommends =[...recommends ,{id:doc.id ,...doc.data()}]
+          break;
+
+          case "new": 
+          newDisneys =[...newDisneys ,{id:doc.id ,...doc.data()}]
+          break;
+
+          case "original": 
+          originals =[...originals ,{id:doc.id ,...doc.data()}]
+          break;
+
+          case "trending": 
+          trendings =[...trendings ,{id:doc.id ,...doc.data()}]
+          break;
+
+        }
         return {id:doc.id , ...doc.data()}
       })
-      dispatch(setMovies(tempMovies));
+      dispatch(setMovies({
+        recommend:recommends,
+        newDisney:newDisneys,
+        original:originals,
+        trending:trendings
+
+      }));
       
     });
   
@@ -32,7 +65,10 @@ function Home() {
   <Container>
    <ImgSlider />
    <Viewers />
-   <Movies />
+   <Recommends/>
+   <NewDisney/>
+    <Originals/>
+    <Trendings/>
   </Container>
   )
 }
